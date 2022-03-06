@@ -1,0 +1,19 @@
+{
+  "name": "express-mesto-gha",
+  "version": "1.0.0",
+  "description": "* В проекте Mesto, показаны в виде картинок, разные точки нашей планеты. \r * Картинок можно добавлять на страницу и так же можно удалять их.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Meder84/express-mesto-gha.git"
+  },
+  "author": "Meder",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Meder84/express-mesto-gha/issues"
+  },
+  "homepage": "https://github.com/Meder84/express-mesto-gha#readme"
+}
