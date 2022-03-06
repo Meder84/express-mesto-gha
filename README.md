@@ -1,4 +1,27 @@
-[![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml) [![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
+# Проект: Mesto
+
+### Обзор
+
+* В проекте Mesto, показаны в виде картинок, разные точки нашей планеты. 
+* Картинок можно добавлять на страницу и так же можно удалять их.
+
+* Есть функционал, где можно ввести данные о пользователя, с помощью всплывающих окон. 
+
+* [Ссылка на проект в github](https://meder84.github.io/express-mesto-gha)
+
+
+**Использованные технологии**
+
+* Html5.
+* Css.
+* javaScript.
+* По стандарту БЭМ.
+
+
+
+
+
+```[![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml) [![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
 # Проект Mesto фронтенд + бэкенд
 
 
@@ -26,3 +49,4 @@
 
 `npm run start` — запускает сервер   
 `npm run dev` — запускает сервер с hot-reload
+```
