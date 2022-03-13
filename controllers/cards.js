@@ -1,43 +1,60 @@
 const Card = require('../models/card');
-const { ERROR_CODE, ERROR_SERVER, NOT_FOUND } = require('../utils/constants');
+const BadRequestError = require('../errors/bad-request');
+const NotFoundError = require('../errors/not-found-err');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(NOT_FOUND).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(ERROR_CODE).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new BadRequestError(err.message);
+      }
+    })
+    .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.user._id)
+module.exports.deleteCard = (req, res, next) => {
+  const { id } = req.params;
+
+  Card.findById(id)
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Такой карточки нет!');
+      }
+      if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) {
+        throw new BadRequestError('Невозможно удалить');
+      }
+      return Card.findByIdAndRemove(id);
+    })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(ERROR_SERVER).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { $addToSet: { likes: req.user._id } },
     { new: true },
   )
     .then((likes) => res.send({ data: likes }))
-    .catch((err) => res.status(ERROR_SERVER).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
     .then((likes) => res.send({ data: likes }))
-    .catch((err) => res.status(ERROR_SERVER).send({ message: err.message }));
+    .catch(next);
 };
