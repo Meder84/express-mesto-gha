@@ -14,9 +14,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-// app.use('/cards', require('./routes/cards'));
-app.use('/users', require('./routes/users'));
-
 app.use((req, res, next) => {
   req.user = {
     _id: '5d8b8592978f8bd833ca8133', // вставьте сюда _id созданного в предыдущем пункте пользователя
@@ -25,4 +22,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.listen(PORT);
+app.use('/cards', require('./routes/cards'));
+app.use('/users', require('./routes/users'));
+
+
+
+app.listen(PORT)
