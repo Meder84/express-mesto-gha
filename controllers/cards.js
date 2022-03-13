@@ -1,10 +1,10 @@
 const Card = require('../models/card');
+const { ERROR_CODE, ERROR_SERVER, NOT_FOUND } = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .populate(['user'])
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(NOT_FOUND).send({ message: err.message }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -13,13 +13,13 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(400).send({ message: err.message }));
+    .catch((err) => res.status(ERROR_CODE).send({ message: err.message }));
 };
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.user._id)
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(ERROR_SERVER).send({ message: err.message }));
 };
 
 module.exports.likeCard = (req, res) => {
@@ -29,15 +29,15 @@ module.exports.likeCard = (req, res) => {
     { new: true },
   )
     .then((likes) => res.send({ data: likes }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(ERROR_SERVER).send({ message: err.message }));
 };
 
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { $pull: { likes: req.user._id } },
     { new: true },
   )
     .then((likes) => res.send({ data: likes }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(ERROR_SERVER).send({ message: err.message }));
 };
