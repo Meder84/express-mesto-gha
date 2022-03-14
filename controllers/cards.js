@@ -1,12 +1,12 @@
 const Card = require('../models/card');
 const BadRequestError = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found-err');
-const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants')
+const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(next);
+    .catch((err) => res.status(NOT_FOUND).send({ message: err.message }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -15,12 +15,7 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new BadRequestError(err.message);
-      }
-    })
-    // .catch(next);
+    .catch((err) => res.status(BAD_REQUEST).send({ message: err.message }));
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -37,7 +32,7 @@ module.exports.deleteCard = (req, res) => {
       return Card.findByIdAndRemove(id);
     })
     .then((card) => res.send({ data: card }))
-    // .catch(next);
+    .catch((err) => res.status(SERVER_ERROR).send({ message: err.message }));
 };
 
 module.exports.likeCard = (req, res) => {
@@ -47,7 +42,7 @@ module.exports.likeCard = (req, res) => {
     { new: true },
   )
     .then((likes) => res.send({ data: likes }))
-    // .catch(next);
+    .catch((err) => res.status(SERVER_ERROR).send({ message: err.message }));
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -57,5 +52,5 @@ module.exports.dislikeCard = (req, res) => {
     { new: true },
   )
     .then((likes) => res.send({ data: likes }))
-    // .catch(next);
+    .catch((err) => res.status(SERVER_ERROR).send({ message: err.message }));
 };
