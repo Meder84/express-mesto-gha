@@ -1,7 +1,6 @@
 const User = require('../models/user');
-const NotFoundError = require('../errors/NotFoundErr');
+const NotFoundError = require('../errors/NotFoundError');
 const BadRequest = require('../errors/BadRequest');
-// const ServerError = require('../errors/ServerError');
 const ValidationError = require('../errors/ValidationError');
 const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants');
 
