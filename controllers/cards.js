@@ -1,14 +1,15 @@
 const Card = require('../models/card');
 const BadRequestError = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found-err');
+const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants')
 
-module.exports.getCards = (req, res, next) => {
+module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
     .catch(next);
 };
 
-module.exports.createCard = (req, res, next) => {
+module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
@@ -19,10 +20,10 @@ module.exports.createCard = (req, res, next) => {
         throw new BadRequestError(err.message);
       }
     })
-    .catch(next);
+    // .catch(next);
 };
 
-module.exports.deleteCard = (req, res, next) => {
+module.exports.deleteCard = (req, res) => {
   const { id } = req.params;
 
   Card.findById(id)
@@ -36,25 +37,25 @@ module.exports.deleteCard = (req, res, next) => {
       return Card.findByIdAndRemove(id);
     })
     .then((card) => res.send({ data: card }))
-    .catch(next);
+    // .catch(next);
 };
 
-module.exports.likeCard = (req, res, next) => {
+module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
     .then((likes) => res.send({ data: likes }))
-    .catch(next);
+    // .catch(next);
 };
 
-module.exports.dislikeCard = (req, res, next) => {
+module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
     .then((likes) => res.send({ data: likes }))
-    .catch(next);
+    // .catch(next);
 };

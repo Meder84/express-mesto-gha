@@ -22,7 +22,7 @@ module.exports.getUserById = (req, res, next) => {
       }
       res.send({ data: user });
     })
-    .catch(next);
+    // .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -37,7 +37,7 @@ module.exports.updateUser = (req, res, next) => {
     },
   )
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    // .catch(next);
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -52,5 +52,5 @@ module.exports.updateAvatar = (req, res, next) => {
     },
   )
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    // .catch(next);
 };
