@@ -1,12 +1,21 @@
 const Card = require('../models/card');
-const BadRequestError = require('../errors/bad-request');
-const NotFoundError = require('../errors/not-found-err');
+const BadRequestError = require('../errors/BadRequest');
+const NotFoundError = require('../errors/NotFoundErr');
+const ValidationError = require('../errors/ValidationError');
 const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(NOT_FOUND).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof ValidationError) {
+        res.status(BAD_REQUEST).send({ message: err.message });
+      } else if (err instanceof NotFoundError) {
+        res.status(NOT_FOUND).send({ message: err.message });
+      } else {
+        res.status(SERVER_ERROR).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.createCard = (req, res) => {
@@ -15,7 +24,13 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(BAD_REQUEST).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof ValidationError) {
+        res.status(BAD_REQUEST).send({ message: err.message });
+      } else {
+        res.status(SERVER_ERROR).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -32,7 +47,15 @@ module.exports.deleteCard = (req, res) => {
       return Card.findByIdAndRemove(id);
     })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(SERVER_ERROR).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof ValidationError) {
+        res.status(BAD_REQUEST).send({ message: err.message });
+      } else if (err instanceof NotFoundError) {
+        res.status(NOT_FOUND).send({ message: err.message });
+      } else {
+        res.status(SERVER_ERROR).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.likeCard = (req, res) => {
@@ -42,7 +65,13 @@ module.exports.likeCard = (req, res) => {
     { new: true },
   )
     .then((likes) => res.send({ data: likes }))
-    .catch((err) => res.status(SERVER_ERROR).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof NotFoundError) {
+        res.status(NOT_FOUND).send({ message: err.message });
+      } else {
+        res.status(SERVER_ERROR).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -52,5 +81,11 @@ module.exports.dislikeCard = (req, res) => {
     { new: true },
   )
     .then((likes) => res.send({ data: likes }))
-    .catch((err) => res.status(SERVER_ERROR).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof NotFoundError) {
+        res.status(NOT_FOUND).send({ message: err.message });
+      } else {
+        res.status(SERVER_ERROR).send({ message: err.message });
+      }
+    });
 };

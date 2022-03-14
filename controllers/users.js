@@ -1,30 +1,53 @@
 const User = require('../models/user');
-const NotFoundError = require('../errors/not-found-err');
-const BadRequest = require('../errors/bad-request');
-const { BAD_REQUEST, NOT_FOUND } = require('../utils/constants');
+const NotFoundError = require('../errors/NotFoundErr');
+const BadRequest = require('../errors/BadRequest');
+// const ServerError = require('../errors/ServerError');
+const ValidationError = require('../errors/ValidationError');
+const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants');
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(BAD_REQUEST).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof ValidationError) {
+        res.status(BAD_REQUEST).send({ message: err.message });
+      } else {
+        res.status(SERVER_ERROR).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.getUser = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(NOT_FOUND).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof ValidationError) {
+        res.status(BAD_REQUEST).send({ message: err.message });
+      } else if (err instanceof NotFoundError) {
+        res.status(NOT_FOUND).send({ message: err.message });
+      } else {
+        res.status(SERVER_ERROR).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь не найден');
-      }
-      res.send({ data: user });
+    .orFail()
+    .catch(() => {
+      throw new NotFoundError('Пользователь не найден');
     })
-    .catch((err) => res.status(NOT_FOUND).send({ message: err.message }));
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err instanceof ValidationError) {
+        res.status(BAD_REQUEST).send({ message: err.message });
+      } else if (err instanceof NotFoundError) {
+        res.status(NOT_FOUND).send({ message: err.message });
+      } else {
+        res.status(SERVER_ERROR).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.updateUser = (req, res) => {
@@ -35,7 +58,6 @@ module.exports.updateUser = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .then((user) => {
@@ -44,7 +66,15 @@ module.exports.updateUser = (req, res) => {
       }
       res.send({ data: user });
     })
-    .catch((err) => res.status(BAD_REQUEST).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof ValidationError) {
+        res.status(BAD_REQUEST).send({ message: err.message });
+      } else if (err instanceof NotFoundError) {
+        res.status(NOT_FOUND).send({ message: err.message });
+      } else {
+        res.status(SERVER_ERROR).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -55,7 +85,6 @@ module.exports.updateAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .then((user) => {
@@ -64,5 +93,13 @@ module.exports.updateAvatar = (req, res) => {
       }
       res.send({ data: user });
     })
-    .catch((err) => res.status(BAD_REQUEST).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof ValidationError) {
+        res.status(BAD_REQUEST).send({ message: err.message });
+      } else if (err instanceof NotFoundError) {
+        res.status(NOT_FOUND).send({ message: err.message });
+      } else {
+        res.status(SERVER_ERROR).send({ message: err.message });
+      }
+    });
 };
