@@ -3,6 +3,10 @@ const BadRequestError = require('../errors/BadRequest');
 const NotFoundError = require('../errors/NotFoundError');
 const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants');
 
+// Здравствуйте Роман. Спасибо вам большое за то, что вы подсказываете как исправить
+// этих ошибок, но у меня остается последняя итерация в связи с этим, к вам
+// большая просьба. Не могли бы оставить, вместе с ошибками еще и примеры. Спасибо большое!
+
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
