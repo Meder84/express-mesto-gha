@@ -1,17 +1,16 @@
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequest');
 const NotFoundError = require('../errors/NotFoundError');
-const ValidationError = require('../errors/ValidationError');
 const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
     .catch((err) => {
-      if (err instanceof ValidationError) {
-        res.status(BAD_REQUEST).send({ message: err.message });
-      } else if (err instanceof NotFoundError) {
-        res.status(NOT_FOUND).send({ message: err.message });
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
+      } else if (err.name === 'NotFoundError') {
+        res.status(NOT_FOUND).send({ message: 'Карточка не найдена!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
@@ -25,8 +24,8 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err instanceof ValidationError) {
-        res.status(BAD_REQUEST).send({ message: err.message });
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
@@ -34,24 +33,24 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  const { id } = req.params;
+  const { cardId } = req.params;
 
-  Card.findById(id)
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Такой карточки нет!');
+        throw new NotFoundError('Карточка не найдена!');
       }
       if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) {
-        throw new BadRequestError('Невозможно удалить');
+        throw new BadRequestError('Невозможно удалить!');
       }
-      return Card.findByIdAndRemove(id);
+      return Card.findByIdAndRemove(cardId);
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err instanceof ValidationError) {
-        res.status(BAD_REQUEST).send({ message: err.message });
-      } else if (err instanceof NotFoundError) {
-        res.status(NOT_FOUND).send({ message: err.message });
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
+      } else if (err.name === 'NotFoundError') {
+        res.status(NOT_FOUND).send({ message: 'Карточка не найдена!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
@@ -66,8 +65,11 @@ module.exports.likeCard = (req, res) => {
   )
     .then((likes) => res.send({ data: likes }))
     .catch((err) => {
-      if (err instanceof NotFoundError) {
-        res.status(NOT_FOUND).send({ message: err.message });
+      if (err.name === 'NotFoundError') {
+        res.status(NOT_FOUND).send({ message: 'Произошла ошибка!' });
+
+        return;
+
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
@@ -82,8 +84,8 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((likes) => res.send({ data: likes }))
     .catch((err) => {
-      if (err instanceof NotFoundError) {
-        res.status(NOT_FOUND).send({ message: err.message });
+      if (err.name === 'NotFoundError') {
+        res.status(NOT_FOUND).send({ message: 'Произошла ошибка!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
