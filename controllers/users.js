@@ -8,7 +8,13 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-  .then((user) => res.send({ data: user }))
+  .then((user) => res.send({
+    data: {
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+    },
+  }))
   .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
@@ -24,8 +30,6 @@ module.exports.getUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
-      } else if (err.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
@@ -39,10 +43,8 @@ module.exports.getUserById = (req, res) => {
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
-      } else if (err.name === 'CastError' ) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
+      if (err.name === 'CastError' ) {
+        res.status(NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
@@ -71,7 +73,7 @@ module.exports.updateUser = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
       } else if (err.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
+        res.status(NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
