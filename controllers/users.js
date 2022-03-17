@@ -33,12 +33,12 @@ module.exports.getUser = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      throw new NotFoundError('Пользователь не найден!');
+      res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError' ) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден!' });
+        res.status(BAD_REQUEST).send({ message: 'Некорректный id!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
@@ -55,19 +55,15 @@ module.exports.updateUser = (req, res) => {
       runValidators: true,
     },
   )
-    .then((user) => {
-      if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
-
-        return;
-      }
-      res.send({ data: user });
+    .orFail(() => {
+      res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
     })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
       } else if (err.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден!' });
+        res.status(BAD_REQUEST).send({ message: 'Некорректный id!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
@@ -84,19 +80,15 @@ module.exports.updateAvatar = (req, res) => {
       runValidators: true,
     },
   )
-    .then((user) => {
-      if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
-
-        return;
-      }
-      res.send({ data: user });
+    .orFail(() => {
+      res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
     })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
       } else if (err.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
+        res.status(BAD_REQUEST).send({ message: 'Некорректный id!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
