@@ -1,8 +1,8 @@
 const User = require('../models/user');
-const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants');
+const NotFound = require('../errors/NotFoundError');
+const { BAD_REQUEST, SERVER_ERROR } = require('../utils/constants');
 
 module.exports.createUser = (req, res) => {
-
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
@@ -31,11 +31,11 @@ module.exports.getUser = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
+      throw new NotFound('Пользователь с указанным _id не найден!');
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'CastError' ) {
+      if (err.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Некорректный id!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
@@ -54,7 +54,7 @@ module.exports.updateUser = (req, res) => {
     },
   )
     .orFail(() => {
-      res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
+      throw new NotFound('Пользователь с указанным _id не найден!');
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -79,7 +79,7 @@ module.exports.updateAvatar = (req, res) => {
     },
   )
     .orFail(() => {
-      res.status(NOT_FOUND).send({ message: 'Пользователь не найден!' });
+      throw new NotFound('Пользователь с указанным _id не найден!');
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {

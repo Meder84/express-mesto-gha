@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequest');
-const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants');
+const NotFound = require('../errors/NotFoundError');
+const { BAD_REQUEST, SERVER_ERROR } = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -28,7 +29,7 @@ module.exports.deleteCard = (req, res) => {
 
   Card.findById(cardId)
     .orFail(() => {
-      res.status(NOT_FOUND).send({ message: 'Карточка не найдена!' });
+      throw new NotFound('Карточка с указанным _id не найдена!');
     })
     .then((card) => {
       if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) {
@@ -53,7 +54,7 @@ module.exports.likeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      res.status(NOT_FOUND).send({ message: 'Карточка не найдена!' });
+      throw new NotFound('Карточка с указанным _id не найдена!');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
@@ -73,17 +74,17 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-  .orFail(() => {
-    res.status(NOT_FOUND).send({ message: 'Карточка не найдена!' });
-  })
-  .then((card) => res.send({ data: card }))
-  .catch((err) => {
-    if (err.name === 'ValidationError') {
-      res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
-    } else if (err.name === 'CastError') {
-      res.status(BAD_REQUEST).send({ message: 'Некорректный id!' });
-    } else {
-      res.status(SERVER_ERROR).send({ message: err.message });
-    }
-  });
+    .orFail(() => {
+      throw new NotFound('Карточка с указанным _id не найдена!');
+    })
+    .then((card) => res.send({ data: card }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
+      } else if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректный id!' });
+      } else {
+        res.status(SERVER_ERROR).send({ message: err.message });
+      }
+    });
 };
