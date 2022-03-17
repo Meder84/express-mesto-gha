@@ -1,6 +1,5 @@
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequest');
-const NotFoundError = require('../errors/NotFoundError');
 const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {

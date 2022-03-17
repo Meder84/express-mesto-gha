@@ -1,15 +1,13 @@
 const User = require('../models/user');
-const NotFoundError = require('../errors/NotFoundError');
 const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants');
-
 
 module.exports.createUser = (req, res) => {
 
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-  .then((user) => res.send({ data: user }))
-  .catch((err) => {
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
       } else {
