@@ -1,7 +1,7 @@
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequest');
 const NotFound = require('../errors/NotFoundError');
-const { BAD_REQUEST, SERVER_ERROR } = require('../utils/constants');
+const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -41,6 +41,8 @@ module.exports.deleteCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Некорректный id!' });
+      } else if (err.statusCode === NOT_FOUND) {
+        res.status(NOT_FOUND).send({ message: 'Карточка с указанным _id не найдена!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
@@ -62,6 +64,8 @@ module.exports.likeCard = (req, res) => {
         res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
       } else if (err.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Некорректный id!' });
+      } else if (err.statusCode === NOT_FOUND) {
+        res.status(NOT_FOUND).send({ message: 'Карточка с указанным _id не найдена!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
@@ -83,6 +87,8 @@ module.exports.dislikeCard = (req, res) => {
         res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
       } else if (err.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Некорректный id!' });
+      } else if (err.statusCode === NOT_FOUND) {
+        res.status(NOT_FOUND).send({ message: 'Карточка с указанным _id не найдена!' });
       } else {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
