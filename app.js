@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { NOT_FOUND } = require('./utils/constants');
+const errorHandler = require('./middlewares/errorHandler');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -14,14 +15,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true,
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '62324f683cb35bef2c4eb60b',
-  };
-
-  next();
-});
-
 app.use('/', require('./routes/cards'));
 app.use('/', require('./routes/users'));
 
@@ -29,4 +22,6 @@ app.use('*', (req, res) => {
   res.status(NOT_FOUND).send({ message: 'Страница не найдена!' });
 });
 
+app.use(errorHandler);
 app.listen(PORT);
+// 58-min;
