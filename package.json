@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "lint": "npx eslint ."
+    "Lint": "eslint .",
+    "Lint:fix": "eslint . --fix"
   },
   "repository": {
     "type": "git",
@@ -25,9 +26,11 @@
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
+    "express-rate-limit": "^6.3.0",
     "helmet": "^5.0.2",
+    "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.2.5",
+    "mongoose": "^6.2.8",
     "validator": "^13.7.0"
   },
   "devDependencies": {
@@ -35,5 +38,6 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
     "nodemon": "^2.0.15"
-  }
+  },
+  "keywords": []
 }
