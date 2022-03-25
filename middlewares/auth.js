@@ -6,27 +6,24 @@ const handleAuthError = () => {
   throw new Forbidden('Необходима авторизация');
 };
 
-module.exports = (req, res, next) => { // тут будет вся авторизация
-  const { authorization } = req.headers; // достаём авторизационный заголовок
-  // const token = req.cookies.jwt;
+module.exports = (req, res, next) => {
+  const { authorization } = req.headers;
 
-  if (!authorization || !authorization.startsWith('Bearer ')) { // убеждаемся, что он есть или начинается с Bearer
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     return handleAuthError(res);
   }
-  // Если токен на месте, извлечём его. Для этого вызовем  таким образом,
-  // в переменную token запишется только JWT.
-  // извлечём токен
+
   const token = authorization.replace('Bearer ', '');
 
   let payload;
 
   try {
-    payload = jwt.verify(token, JWT_SECRET); // верифицируем токен
+    payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
     return handleAuthError(res);
   }
 
-  req.user = payload; // записываем пейлоуд в объект запроса
+  req.user = payload;
 
-  return next(); // пропускаем запрос дальше
+  return next();
 };
