@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 
-const { limiter } = require('./middlewares/rateLimit');
 const { NOT_FOUND } = require('./utils/constants');
 const errorHandler = require('./middlewares/errorHandler');
 const { createUser, login } = require('./controllers/users');

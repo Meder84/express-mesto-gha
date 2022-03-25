@@ -86,6 +86,15 @@ const getUserById = (req, res) => {
     });
 };
 
+const getUsersMe = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(() => {
+      throw new NotFound('Пользователь с таким id не найден');
+    })
+    .then((user) => res.send({ data: user }))
+    .catch(next);
+};
+
 const updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
@@ -138,15 +147,6 @@ const updateAvatar = (req, res) => {
         res.status(SERVER_ERROR).send({ message: err.message });
       }
     });
-};
-
-const getUsersMe = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail(() => {
-      throw new NotFound('Пользователь с таким id не найден');
-    })
-    .then((currentUser) => res.send({ currentUser }))
-    .catch(next);
 };
 
 module.exports = {
