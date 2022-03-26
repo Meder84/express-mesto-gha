@@ -7,7 +7,7 @@ const helmet = require('helmet');
 const { NOT_FOUND } = require('./config/constants');
 const errorHandler = require('./middlewares/errorHandler');
 const { createUser, login } = require('./controllers/users');
-const { registerValid } = require('./middlewares/validations');
+const { registerValid, loginValid } = require('./middlewares/validations');
 const auth = require('./middlewares/auth');
 const { PORT } = require('./config/index');
 
@@ -25,7 +25,7 @@ app.use(helmet());
 app.use(cookieParser());
 
 app.post('/signup', registerValid, createUser);
-app.post('/signin', registerValid, login);
+app.post('/signin', loginValid, login);
 
 app.use(auth);
 

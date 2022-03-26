@@ -1,5 +1,5 @@
 class Unauthorized extends Error { // Неавторизованно
-  constructor(message) {
+  constructor(message = 'Авторизация не прошла!') {
     super(message);
     this.message = message;
     this.name = 'Unauthorized';
