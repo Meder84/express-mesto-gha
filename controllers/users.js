@@ -3,12 +3,18 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFound = require('../errors/NotFoundError');
 const ErrorConflict = require('../errors/ErrorConflict');
-const { SALT_ROUNDS, JWT_SECRET } = require('../config/index');
+const BadRequestError = require('../errors/BadRequest');
+// const ValidationError = require('../errors/ValidationError');
+const { SALT_ROUNDS, JWT_SECRET, BAD_REQUEST } = require('../config/index');
 
 const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
+
+  // if (!email || !password) {
+  //   return next(new BadRequestError('Некорректные данные!'));
+  // }
 
   User.findOne({ email })
     .then((user) => {
@@ -21,6 +27,11 @@ const createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
+      }
+    })
     .catch(next);
 };
 
@@ -40,6 +51,11 @@ const login = (req, res, next) => {
         sameSite: true,
       })
         .send({ message: 'Авторизация прошла успешно!' });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
+      }
     })
     .catch(next);
 };
@@ -82,6 +98,11 @@ const updateUser = (req, res, next) => {
       throw new NotFound('Пользователь с указанным _id не найден!');
     })
     .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new BadRequestError({ message: err.message });
+      }
+    })
     .catch(next);
 };
 
@@ -99,6 +120,11 @@ const updateAvatar = (req, res, next) => {
       throw new NotFound('Пользователь с указанным _id не найден!');
     })
     .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new BadRequestError({ message: err.message });
+      }
+    })
     .catch(next);
 };
 

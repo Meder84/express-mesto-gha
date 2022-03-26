@@ -1,19 +1,13 @@
 const jwt = require('jsonwebtoken');
-const Forbidden = require('../errors/Forbidden');
+const Unauthorized = require('../errors/Unauthorized');
 const { JWT_SECRET } = require('../config/index');
 
 const handleAuthError = () => {
-  throw new Forbidden('Необходима авторизация');
+  throw new Unauthorized('Необходима авторизация');
 };
 
 module.exports = (req, res, next) => {
-  const { authorization } = req.headers;
-
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    return handleAuthError(res);
-  }
-
-  const token = authorization.replace('Bearer ', '');
+  const token = req.cookies.jwt;
 
   let payload;
 
