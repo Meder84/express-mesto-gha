@@ -31,6 +31,7 @@ const createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError('Некорректные данные!');
       }
+      throw err;
     })
     .catch(next);
 };
@@ -97,6 +98,7 @@ const updateUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError({ message: err.message });
       }
+      throw err;
     })
     .catch(next);
 };
@@ -119,6 +121,7 @@ const updateAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError({ message: err.message });
       }
+      throw err;
     })
     .catch(next);
 };

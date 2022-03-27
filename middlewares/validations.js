@@ -1,20 +1,43 @@
 const { celebrate, Joi } = require('celebrate');
+const validator = require('validator');
 const { regexLink } = require('../config/constants');
-
-const loginValid = celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-});
 
 const registerValid = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
+    email: Joi.string().required().custom((value, helper) => {
+      if (!validator.isEmail(value)) {
+        return helper.error('string.notEmail');
+      }
+      return value;
+    }).messages({
+      'any.required': 'Email не указан',
+      'string.notEmail': 'Email некорректный',
+    }),
+    password: Joi.string().required().messages({
+      'any.required': 'Пароль не указан',
+      'string.min': 'Пароль должен быть больше 8и символов',
+    }),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().pattern(regexLink),
+  }),
+});
+
+const loginValid = celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().custom((value, helper) => {
+      if (!validator.isEmail(value)) {
+        return helper.error('string.notEmail');
+      }
+      return value;
+    }).messages({
+      'any.required': 'Email не указан',
+      'string.notEmail': 'Email некорректный',
+    }),
+    password: Joi.string().required().messages({
+      'any.required': 'Пароль не указан',
+      'string.min': 'Пароль должен быть больше 8и символов',
+    }),
   }),
 });
 
