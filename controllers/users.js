@@ -29,7 +29,7 @@ const createUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
+        throw new BadRequestError('Некорректные данные!');
       }
     })
     .catch(next);
@@ -51,11 +51,6 @@ const login = (req, res, next) => {
         sameSite: true,
       })
         .send({ message: 'Авторизация прошла успешно!' });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Некорректные данные!' });
-      }
     })
     .catch(next);
 };
