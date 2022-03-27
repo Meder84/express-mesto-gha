@@ -1,4 +1,4 @@
-class Unauthorized extends Error { // Неавторизованно
+class Unauthorized extends Error {
   constructor(message = 'Авторизация не прошла!') {
     super(message);
     this.message = message;

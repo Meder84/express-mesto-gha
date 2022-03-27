@@ -4,17 +4,12 @@ const User = require('../models/user');
 const NotFound = require('../errors/NotFoundError');
 const ErrorConflict = require('../errors/ErrorConflict');
 const BadRequestError = require('../errors/BadRequest');
-// const ValidationError = require('../errors/ValidationError');
-const { SALT_ROUNDS, JWT_SECRET, BAD_REQUEST } = require('../config/index');
+const { SALT_ROUNDS, JWT_SECRET } = require('../config/index');
 
 const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-
-  // if (!email || !password) {
-  //   return next(new BadRequestError('Некорректные данные!'));
-  // }
 
   User.findOne({ email })
     .then((user) => {
@@ -29,11 +24,11 @@ const createUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Некорректные данные!');
+        next(new BadRequestError({ message: err.message }));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 const login = (req, res, next) => {
@@ -96,11 +91,11 @@ const updateUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError({ message: err.message });
+        next(new BadRequestError({ message: err.message }));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 const updateAvatar = (req, res, next) => {
@@ -119,11 +114,11 @@ const updateAvatar = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError({ message: err.message });
+        next(new BadRequestError({ message: err.message }));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 module.exports = {

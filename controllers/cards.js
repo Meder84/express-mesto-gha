@@ -16,11 +16,11 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError({ message: 'Некорректные данные!' });
+        next(new BadRequestError({ message: err.message }));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 module.exports.deleteCard = (req, res, next) => {

@@ -1,4 +1,4 @@
-class Forbidden extends Error { // Неавторизованно
+class Forbidden extends Error {
   constructor(message) {
     super(message);
     this.message = message;
